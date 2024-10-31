@@ -26,12 +26,20 @@
     <p>Это пример WebApp, который открыт через Telegram.</p>
     <button class="button" onclick="addUserData()">Добавить пользователя</button>
     <button class="button" onclick="getUserData()">Получить данные о пользователе</button>
+    <button class="button" onclick="authorizeWithSber()">Войти через Сбер ID</button>
     <div id="user-info"></div>
 
     <script>
         let db;
 
-        // Открытие базы данных
+        // Настройка WebApp с использованием Telegram WebApp SDK
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Растягиваем WebApp на весь экран
+
+        // Открытие базы данных при загрузке страницы
+        window.onload = openDatabase;
+
+        // Открытие базы данных IndexedDB
         function openDatabase() {
             let request = indexedDB.open("UsersDatabase", 1);
 
@@ -105,12 +113,17 @@
             };
         }
 
-        // Настройка WebApp с использованием Telegram WebApp SDK
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Растягиваем WebApp на весь экран
+        // Авторизация через Сбер ID
+        function authorizeWithSber() {
+            const client_id = '678cc1cb-b816-4873-ba00-11f535620128';
+            const redirect_uri = 'https://440f-178-214-248-115.ngrok-free.app';
+            const state = 'xyz123';
 
-        // Открываем базу данных при загрузке страницы
-        window.onload = openDatabase;
+            const auth_url = `https://id-psi.sber.ru/ru/prod/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=openid&state=${state}`;
+
+            // Перенаправляем пользователя на страницу авторизации
+            window.location.href = auth_url;
+        }
     </script>
 </body>
 </html>
