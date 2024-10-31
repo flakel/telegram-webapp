@@ -5,29 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Приветственное приложение</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
             text-align: center;
-            margin-top: 20%;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 1.5em;
         }
         .button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 25px;
+            font-size: 1.2em;
+            color: #fff;
             background-color: #0088cc;
-            color: white;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #005f99;
         }
     </style>
 </head>
 <body>
-    <h1>Привет, пользователь Telegram!</h1>
-    <p>Это пример WebApp, который открыт через Telegram.</p>
-    <button class="button" onclick="addUserData()">Добавить пользователя</button>
-    <button class="button" onclick="getUserData()">Получить данные о пользователе</button>
-    <button class="button" onclick="authorizeWithSber()">Войти через Сбер ID</button>
-    <div id="user-info"></div>
+    <div class="container">
+        <h1>Добро пожаловать!</h1>
+        <p>Это пример WebApp, который открыт через Telegram. Авторизуйтесь или добавьте свои данные, чтобы продолжить.</p>
+        <button class="button" onclick="authorizeWithSber()"><i class="fas fa-id-card"></i> Войти через Сбер ID</button>
+        <button class="button" onclick="addUserData()" style="margin-top: 15px;"><i class="fas fa-user-plus"></i> Добавить пользователя</button>
+    </div>
 
     <script>
         let db;
@@ -87,36 +114,10 @@
             };
         }
 
-        // Получение данных о пользователе
-        function getUserData() {
-            let transaction = db.transaction(["users"], "readonly");
-            let userStore = transaction.objectStore("users");
-
-            let request = userStore.get(1); // Здесь используется id = 1 для примера
-
-            request.onsuccess = function (event) {
-                let user = event.target.result;
-                if (user) {
-                    document.getElementById("user-info").innerHTML = `
-                        <p>ФИО: ${user.full_name}</p>
-                        <p>Телефон: ${user.phone_number}</p>
-                        <p>Самозанятый: ${user.is_self_employed ? 'Да' : 'Нет'}</p>
-                    `;
-                } else {
-                    document.getElementById("user-info").innerText = "Пользователь не найден";
-                }
-            };
-
-            request.onerror = function (event) {
-                console.error("Ошибка получения пользователя:", event.target.errorCode);
-                document.getElementById("user-info").innerText = "Ошибка при получении данных";
-            };
-        }
-
         // Авторизация через Сбер ID
         function authorizeWithSber() {
             const client_id = '678cc1cb-b816-4873-ba00-11f535620128';
-            const redirect_uri = 'https://440f-178-214-248-115.ngrok-free.app';
+            const redirect_uri = 'https://9778-69-50-95-110.ngrok-free.app/callback';
             const state = 'xyz123';
 
             const auth_url = `https://id-psi.sber.ru/ru/prod/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=openid&state=${state}`;
