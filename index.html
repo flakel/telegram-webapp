@@ -24,16 +24,93 @@
 <body>
     <h1>Привет, пользователь Telegram!</h1>
     <p>Это пример WebApp, который открыт через Telegram.</p>
-    <button class="button" onclick="showAlert()">Нажми на меня</button>
+    <button class="button" onclick="addUserData()">Добавить пользователя</button>
+    <button class="button" onclick="getUserData()">Получить данные о пользователе</button>
+    <div id="user-info"></div>
 
     <script>
-        function showAlert() {
-            alert('Спасибо за нажатие!');
+        let db;
+
+        // Открытие базы данных
+        function openDatabase() {
+            let request = indexedDB.open("UsersDatabase", 1);
+
+            request.onupgradeneeded = function (event) {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains("users")) {
+                    let userStore = db.createObjectStore("users", { keyPath: "id", autoIncrement: true });
+                    userStore.createIndex("full_name", "full_name", { unique: false });
+                    userStore.createIndex("phone_number", "phone_number", { unique: true });
+                    userStore.createIndex("is_self_employed", "is_self_employed", { unique: false });
+                }
+            };
+
+            request.onsuccess = function (event) {
+                db = event.target.result;
+                console.log("База данных успешно открыта");
+            };
+
+            request.onerror = function (event) {
+                console.error("Ошибка открытия базы данных:", event.target.errorCode);
+            };
+        }
+
+        // Добавление данных о пользователе
+        function addUserData() {
+            let transaction = db.transaction(["users"], "readwrite");
+            let userStore = transaction.objectStore("users");
+
+            let newUser = {
+                full_name: "Иван Иванов",
+                phone_number: "+79161234567",
+                is_self_employed: true
+            };
+
+            let request = userStore.add(newUser);
+
+            request.onsuccess = function () {
+                console.log("Пользователь добавлен в базу данных");
+                alert("Пользователь успешно добавлен!");
+            };
+
+            request.onerror = function (event) {
+                console.error("Ошибка добавления пользователя:", event.target.errorCode);
+                alert("Ошибка при добавлении пользователя!");
+            };
+        }
+
+        // Получение данных о пользователе
+        function getUserData() {
+            let transaction = db.transaction(["users"], "readonly");
+            let userStore = transaction.objectStore("users");
+
+            let request = userStore.get(1); // Здесь используется id = 1 для примера
+
+            request.onsuccess = function (event) {
+                let user = event.target.result;
+                if (user) {
+                    document.getElementById("user-info").innerHTML = `
+                        <p>ФИО: ${user.full_name}</p>
+                        <p>Телефон: ${user.phone_number}</p>
+                        <p>Самозанятый: ${user.is_self_employed ? 'Да' : 'Нет'}</p>
+                    `;
+                } else {
+                    document.getElementById("user-info").innerText = "Пользователь не найден";
+                }
+            };
+
+            request.onerror = function (event) {
+                console.error("Ошибка получения пользователя:", event.target.errorCode);
+                document.getElementById("user-info").innerText = "Ошибка при получении данных";
+            };
         }
 
         // Настройка WebApp с использованием Telegram WebApp SDK
         const tg = window.Telegram.WebApp;
         tg.expand(); // Растягиваем WebApp на весь экран
+
+        // Открываем базу данных при загрузке страницы
+        window.onload = openDatabase;
     </script>
 </body>
 </html>
