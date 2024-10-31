@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приветственное приложение</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20%;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Привет, пользователь Telegram!</h1>
+    <p>Это пример WebApp, который открыт через Telegram.</p>
+    <button class="button" onclick="showAlert()">Нажми на меня</button>
+
+    <script>
+        function showAlert() {
+            alert('Спасибо за нажатие!');
+        }
+
+        // Настройка WebApp с использованием Telegram WebApp SDK
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Растягиваем WebApp на весь экран
+    </script>
+</body>
+</html>
